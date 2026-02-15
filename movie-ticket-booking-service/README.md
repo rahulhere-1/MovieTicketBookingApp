@@ -1,100 +1,114 @@
-# Movie Ticket Booking 
+# Movie Ticket Booking Service
 
-This project is built with Spring Boot and delivers everything you need to search for movies, reserve seats, and manage screenings with total security and ease. Fortified with JWT authentication, your data and bookings are always protected.
-## Features
+A robust Spring Boot backend service for a movie ticket booking application. This service handles user authentication, movie management, theater/screen management, show scheduling, and ticket booking.
 
-- **User Registration \& Authentication**
-    - Register and login securely using JWT tokens.
-- **Browse Movies \& Shows**
-    - View currently running movies and upcoming releases.
-    - Check showtimes and available seats for each movie.
-- **Book Tickets**
-    - Select desired movie, time, and number of seats.
-- **Manage Bookings**
-    - View, update, or cancel bookings.
-- **Admin Panel**
-    - Add, edit, or remove movies and showtimes.
-- **Fully Secured**
-    - All core endpoints require JWT authentication to prevent unauthorized access.
-- **RESTful APIs**
-    - Designed to work seamlessly with web or mobile frontends.
+## 🚀 Features
 
+*   **User Management**: Secure signup and login with JWT authentication.
+*   **Movie Management**: Add movies and view movie details.
+*   **Theater & Screen Management**: Manage theaters and their screens.
+*   **Show Management**: Schedule shows for movies in specific theaters.
+*   **Booking System**: Book tickets for shows with seat selection.
+*   **Security**: Role-based access control (implied) and secure password handling.
 
-## Tech Stack
+## 🛠️ Tech Stack
 
-- **Backend:** Java, Spring Boot
-- **Database:** MySQL
-- **Security:** Spring Security with JWT
-- **ORM:** Spring Data JPA
-- **Build Tool:** Maven
+*   **Language**: Java 17+
+*   **Framework**: Spring Boot 3.x
+*   **Build Tool**: Maven
+*   **Database**: MySQL/PostgreSQL (Configured in properties)
+*   **Security**: Spring Security, JWT (JSON Web Tokens)
+*   **Documentation**: REST API (documented below)
 
+## 📋 Prerequisites
 
-## Getting Started
+Ensure you have the following installed:
+*   Java Development Kit (JDK) 17 or higher
+*   Maven (or use the provided `mvnw` wrapper)
+*   A running database instance (configure connection in `application.properties`)
 
-### Prerequisites
+## ⚙️ Setup & Running
 
-- Java 17+
-- Maven
+1.  **Clone the repository** (if you haven't already).
+2.  **Navigate to the project directory**:
+    ```bash
+    cd movie-ticket-booking-service
+    ```
+3.  **Configure Database**:
+    Open `src/main/resources/application.properties` and update your database credentials.
+4.  **Run the Application**:
+    ```bash
+    ./mvnw spring-boot:run
+    ```
+    The server will start on `http://localhost:8080`.
 
+## 🔐 Authentication
 
-### Installation
+ The API uses **JWT (JSON Web Tokens)** for authentication.
+1.  **Login** using Basic Auth at `/user`.
+2.  The response header `Authorization` will contain the JWT token.
+3.  Include this token in the `Authorization` header for all subsequent requests to `/api/**` endpoints.
 
-1. **Clone the repo**
+## 📡 API Documentation
 
-```sh
-git clone https://github.com/your-username/MovieTicketBooking.git
-cd MovieTicketBooking
-```
+### **User Controller**
+*   **Sign Up**
+    *   `POST /signup`
+    *   **Body**: `UserDetailsDTO` ({`username`, `password`, `role`, ...})
+    *   **Description**: Register a new user.
+*   **Login**
+    *   `POST /user`
+    *   **Body**: `UserDetailsDTO` ({`username`, `password`})
+    *   **Description**: Authenticate user and receive JWT token.
 
-2. **Build the project**
+### **Movie Controller** (`/api/movie`)
+*   **Get Movie Details**
+    *   `GET /api/movie/details?id={movieId}`
+    *   **Description**: Fetch details of a specific movie.
+*   **Get All Movies**
+    *   `GET /api/movie/all-movies`
+    *   **Description**: Retrieve a list of all movies.
+*   **Add Movie**
+    *   `POST /api/movie/save`
+    *   **Body**: `MovieDTO`
+    *   **Description**: Add a new movie to the database.
+*   **Health Check**
+    *   `GET /api/movie/health-check`
+    *   **Description**: Check if the server is running.
 
-```sh
-mvn clean install
-```
+### **Booking Controller** (`/api/booking`)
+*   **Book Ticket**
+    *   `POST /api/booking/book`
+    *   **Body**: `BookingRequestDTO` ({`userId`, `showId`, `seatIds`})
+    *   **Description**: Book tickets for a specific show. Returns success or conflict if seats are unavailable.
 
-3. **Run the application**
+### **Show Controller** (`/api/show`)
+*   **Get Show Details**
+    *   `GET /api/show/details?showId={showId}`
+    *   **Description**: Get details of a specific show.
+*   **Get Shows by Movie**
+    *   `GET /api/show/all-shows?movieId={movieId}`
+    *   **Description**: List all shows for a specific movie.
+*   **Add Show**
+    *   `POST /api/show/save`
+    *   **Body**: `ShowDTO`
+    *   **Description**: Schedule a new show.
+*   **Delete Show**
+    *   `DELETE /api/show/delete?showId={showId}`
+    *   **Description**: Cancel/Remove a scheduled show.
 
-```sh
-mvn spring-boot:run
-```
+### **Theater Controller** (`/api/theater`)
+*   **Get Screens**
+    *   `GET /api/theater/all-screens?theaterId={theaterId}`
+    *   **Description**: Get all screens in a specific theater.
+*   **Add Theater**
+    *   `POST /api/theater/save`
+    *   **Body**: `TheaterDTO`
+    *   **Description**: Register a new theater.
+*   **Add Screens**
+    *   `POST /api/theater/save/screens`
+    *   **Body**: `ScreenDTO`
+    *   **Description**: Add screens to an existing theater.
 
-
-Application will start on `http://localhost:8080/`
-
-## Usage
-
-### Register \& Login
-
-- Use `/api/signup` to create a new user.
-- Login through `/api/user` to receive a JWT token.
-
-
-### Booking Tickets
-
-- Browse movies with `/api/movies/all-movies`
-- View available showtimes `/api/show/details?showId={id}`
-- Book tickets by POSTing to `/api/booking/book` (JWT required)
-
-
-## Customization
-
-- Database properties can be set in `src/main/resources/application.properties`.
-- Switch databases by changing the connection URL and adding the relevant driver dependencies.
-
-
-## Security
-
-- All endpoints (except login/register) require a valid JWT in `Authorization: Bearer <token>` header.
-- Roles: **USER** (basic booking), **ADMIN** (manage movies, shows).
-
-
-## License
-
-This project is licensed under the MIT License.
-
-## Author
-
-- Rahul
-
-Happy Booking!
-
+### **Screen Controller** (`/api/screen`)
+*   *(No public endpoints currently exposed)*
